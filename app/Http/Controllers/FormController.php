@@ -71,4 +71,21 @@ class FormController extends Controller
         $questions = session('questions');
         return view('questions', compact('questions'));        
     }
+
+    public function nextQuestion(Request $request){
+        $questions = session('questions');
+        $currentQuestionIndex = $request->input('questionIndex');
+        $userAnswers = session('userAnswer', []);
+
+        //Store  user answer
+        $userAnswers[] = $request->input('answer');
+        session(['userAnswers' => $userAnswers]);
+
+        //Move to the next question
+        $currentQuestionIndex++;
+        session(['currentQuestionIndex' => $currentQuestionIndex]);
+
+        //Redirect to the questions view
+        return redirect()->route('question.show');
+    }
 }
