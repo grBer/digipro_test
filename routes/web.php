@@ -10,3 +10,4 @@ use App\Http\Controllers\FormController;
 
 Route::get('/', [FormController::class, 'showForm'])->name('form.show');
 Route::post('/', [FormController::class, 'submitForm'])->name('form.submit');
+Route::get('/questions', [FormController::class, 'showQuestions'])->name('questions.show');

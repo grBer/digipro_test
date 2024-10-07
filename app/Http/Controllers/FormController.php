@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
+use App\Models\SearchHistory;
 
 class FormController extends Controller
 {
@@ -30,8 +32,43 @@ class FormController extends Controller
                 ->withInput();
         }
 
-        // Handle successful validation (e.g., save data, send email, etc.)
-        // For now, let's just return a success message
-        return redirect()->route('form.show')->with('success', 'Form submitted successfully!');
+        //Prepare the API URL
+        $amount = $request->numQuestions;
+        $difficulty = $request->difficulty;
+        $type = $request->type ?? 'multiple'; //if is nt provided i set as default the multiple
+        $url = "https://opentdb.com/api.php?amount={$amount}&difficulty={$difficulty}&type={$type}";
+
+        //Make the Api call
+        $resposne = Http::get($url);
+
+        //Check if response is successful
+        if ($response->successful()){
+            $data = $response->json();
+
+            //Filter and sort the data
+            $filteredQuestions = collect($data['results'])->filter(function($question){
+                return $question['category'] !== 'Entertainment: Video Games';
+            });
+
+            $sortedQuestions = $filteredQuestions->sortBy('category')->values()->all();
+
+            //Store valid search in the database
+            SearchHistory::create([
+                'full_name' => $request->fullname,
+                'email' => $request->email,
+                'num_questions' => $request->numQuestions,
+                'difficulty' => $request->difficulty,
+                'type' => $request->type,
+            ]);
+
+            return redirect()->route('questions.show')->with('questions', $sortedQuestions);            
+        }else{
+            return redirect()->route('form.show')->with('error', 'Failed to fetch data from the API');
+        }        
+    }
+
+    public function showQuestions(Request $request){
+        $questions = session('questions');
+        return view('questions', compact('questions'));        
     }
 }

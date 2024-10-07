@@ -60,8 +60,7 @@
             <select class="form-control" id="type" name="type">
                 <option value="" disabled selected>Select Type</option>
                 <option value="multiple-choice" {{ old('type') == 'multiple-choice' ? 'selected' : '' }}>Multiple Choice</option>
-                <option value="true-false" {{ old('type') == 'true-false' ? 'selected' : '' }}>True/False</option>
-                <option value="short-answer" {{ old('type') == 'short-answer' ? 'selected' : '' }}>Short Answer</option>
+                <option value="true-false" {{ old('type') == 'true-false' ? 'selected' : '' }}>True/False</option>                
             </select>
         </div>
 
