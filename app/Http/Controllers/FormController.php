@@ -39,7 +39,12 @@ class FormController extends Controller
         $url = "https://opentdb.com/api.php?amount={$amount}&difficulty={$difficulty}&type={$type}";
 
         //Make the Api call
-        $resposne = Http::get($url);
+        //$resposne = Http::get($url);
+
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->get($url);
+        
 
         //Check if response is successful
         if ($response->successful()){
@@ -54,7 +59,7 @@ class FormController extends Controller
 
             //Store valid search in the database
             SearchHistory::create([
-                'full_name' => $request->fullname,
+                'full_name' => $request->fullName,
                 'email' => $request->email,
                 'num_questions' => $request->numQuestions,
                 'difficulty' => $request->difficulty,
